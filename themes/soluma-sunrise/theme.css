@@ -1,0 +1,237 @@
+/* Soluma Sunrise 1.4.1 — theme.css
+   Bulwark compiles manifest.json first (the --color-* tokens, the --soluma-* brand tokens, radii,
+   typography, print, density) and appends this file after it. This file holds what the manifest
+   cannot say: the semantic layer the skin reads (--sol-*), the rest of Tailwind's scale, keyframes
+   and the system-preference variants. Bulwark keeps only :root and .dark rules here (plus
+   @keyframes, @font-face, @media, @supports); components are styled in skin.css.
+
+   The theme's card in Settings > Appearance. For a theme an admin installs, Bulwark does not
+   show an image: it paints a small mailbox from the FIRST value it finds for a few --color-*
+   tokens in the first :root (or .dark) block. So in manifest.json, tokens.light and tokens.dark
+   each open with a few "--color-…" entries written for that card alone (the rail's and the
+   folder pane's colour, the selected row's Gold wash). The real values follow under their plain
+   names ("sidebar", "primary", …) and, coming later in the same block, are the ones the app
+   uses. Keep those card entries first. skin.css refines the card further while this theme is
+   the active one.
+
+   Sources: brand-kit/color/tokens.css (v1.3) and ui-kit/soluma-ui-kit.html (v1.3). */
+
+:root {
+  /* Native controls (checkbox, radio, range, progress) take the ink. */
+  accent-color: var(--color-primary);
+
+  /* ── Semantic layer, light. Names follow the UI kit's tier 3. ── */
+  --sol-raised: var(--ext-white);
+  --sol-overlay: var(--ext-white);
+  --sol-sunken: var(--soluma-ivory);
+  --sol-field: var(--ext-white);
+  --sol-field-disabled: var(--soluma-ivory);
+  --sol-inverse: var(--soluma-graphite);
+  --sol-inverse-text: var(--soluma-ivory);
+  --sol-inverse-danger: #F97770;
+  --sol-hover: color-mix(in srgb, var(--soluma-graphite) 5%, transparent);
+  --sol-active: color-mix(in srgb, var(--soluma-graphite) 9%, transparent);
+  --sol-scrim: color-mix(in srgb, var(--soluma-pitch) 48%, transparent);
+
+  --sol-text-tertiary: var(--ext-neutral-56);
+  --sol-text-disabled: var(--ext-neutral-66);
+
+  --sol-border-control: var(--ext-neutral-66);
+  --sol-border-control-hover: var(--soluma-stone);
+  --sol-border-strong: var(--soluma-graphite);
+  /* What floats carries a hairline as well as a shadow. */
+  --sol-border-float: var(--soluma-sand);
+
+  --sol-primary-hover: var(--soluma-slate);
+  --sol-primary-active: var(--soluma-pitch);
+  --sol-secondary: var(--soluma-sand);
+  --sol-secondary-hover: color-mix(in oklab, var(--soluma-sand) 94%, var(--soluma-graphite));
+  --sol-secondary-active: color-mix(in oklab, var(--soluma-sand) 88%, var(--soluma-graphite));
+  --sol-disabled: color-mix(in srgb, var(--soluma-graphite) 6%, transparent);
+  --sol-danger-hover: color-mix(in oklab, #BE2323 84%, var(--soluma-graphite));
+  --sol-danger-active: color-mix(in oklab, #BE2323 70%, var(--soluma-graphite));
+
+  /* The one warm action: the middle step, Graphite label. */
+  --sol-accent: var(--soluma-step-2);
+  --sol-accent-text: var(--soluma-graphite);
+  --sol-accent-hover: color-mix(in srgb, var(--ext-white) 16%, transparent);
+  --sol-accent-active: color-mix(in srgb, var(--soluma-graphite) 10%, transparent);
+
+  --sol-error-text: #B7191C;
+  --sol-error-subtle: #FFEEEC;
+  --sol-error-border-subtle: #FCCCC6;
+  --sol-success-subtle: #E9F8EC;
+  --sol-success-border-subtle: #BFE4C8;
+  --sol-warning-subtle: #FFF2D2;
+  --sol-warning-border-subtle: #F7D494;
+  --sol-info-subtle: #EEF3FB;
+  --sol-info-border-subtle: #CBD9F3;
+
+  /* Mail. Selected in a sunken pane is lit; read mail steps back, unread stays on the page. */
+  --sol-lit: var(--ext-white);
+  --sol-read: color-mix(in srgb, var(--soluma-ivory) 46%, var(--soluma-paper));
+  --sol-link: var(--soluma-graphite);
+  --sol-link-rule: var(--ext-neutral-66);
+
+  /* The rail is dark in both variants: Graphite beside Paper, Pitch beside Graphite. */
+  --sol-rail: var(--soluma-graphite);
+  --sol-rail-edge: var(--soluma-graphite);
+
+  /* The Sunrise turned upright, Rose at the foot: the edge on whatever is current. */
+  --sol-rise: linear-gradient(0deg, #F03D6E 0%, #FF6A45 36%, #FFA640 70%, #FFD873 100%);
+  /* The glow behind an empty pane. */
+  --sol-dawn-rose: color-mix(in srgb, var(--soluma-rose) 9%, transparent);
+  --sol-dawn-amber: color-mix(in srgb, var(--soluma-amber) 14%, transparent);
+  --sol-dawn-gold: color-mix(in srgb, var(--soluma-gold) 30%, transparent);
+
+  /* Shadow: only for what floats. Warm umber on light. */
+  --sol-shadow-sm: 0 1px 2px rgb(58 50 38 / 0.06), 0 3px 8px -2px rgb(58 50 38 / 0.08);
+  --sol-shadow-md: 0 2px 4px -1px rgb(58 50 38 / 0.06), 0 12px 28px -6px rgb(58 50 38 / 0.14);
+  --sol-shadow-lg: 0 4px 10px -2px rgb(58 50 38 / 0.06), 0 28px 64px -12px rgb(58 50 38 / 0.22);
+
+  /* ── The rest of the scale. Bulwark is Tailwind 4, so its utilities read these. ── */
+  /* Radius: the manifest sets sm, md, lg and xl; these are the steps it has no key for. */
+  --radius-xs: 4px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
+
+  /* Geist in three weights: 400 body, 500 labels, 600 headings. Nothing heavier. */
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 600;
+  --font-weight-black: 600;
+  --default-font-family: var(--font-sans);
+  --default-mono-font-family: var(--font-mono);
+
+  /* Motion: the brand easing at interface speed. */
+  --ease-out: var(--soluma-ease-out);
+  --default-transition-timing-function: var(--soluma-ease-out);
+  --default-transition-duration: 150ms;
+  /* Skeletons breathe at the pace of the brand's loading loop. */
+  --animate-pulse: soluma-pulse 1.6s ease-in-out infinite;
+
+  /* Proofreading underlines: spelling follows destructive; these three are Bulwark's own tokens. */
+  --text-issue-grammar: #375998;
+  --text-issue-style: #7F4E07;
+  --text-issue-other: var(--soluma-stone);
+}
+
+.dark {
+  accent-color: var(--color-primary);
+
+  --sol-raised: var(--ext-graphite-raised);
+  --sol-overlay: var(--soluma-slate);
+  --sol-sunken: var(--soluma-pitch);
+  --sol-field: var(--soluma-pitch);
+  --sol-field-disabled: color-mix(in srgb, var(--soluma-ivory) 6%, transparent);
+  --sol-inverse: var(--soluma-ivory);
+  --sol-inverse-text: var(--soluma-graphite);
+  --sol-inverse-danger: #BE2323;
+  --sol-hover: color-mix(in srgb, var(--soluma-ivory) 7%, transparent);
+  --sol-active: color-mix(in srgb, var(--soluma-ivory) 12%, transparent);
+  --sol-scrim: color-mix(in srgb, var(--soluma-pitch) 64%, transparent);
+
+  --sol-text-tertiary: var(--ext-neutral-66);
+  --sol-text-disabled: var(--ext-neutral-56);
+
+  --sol-border-control: var(--ext-neutral-56);
+  --sol-border-control-hover: var(--soluma-mist);
+  --sol-border-strong: var(--soluma-ivory);
+  --sol-border-float: color-mix(in srgb, var(--soluma-ivory) 14%, transparent);
+
+  --sol-primary-hover: var(--soluma-paper);
+  --sol-primary-active: var(--soluma-sand);
+  --sol-secondary: var(--soluma-slate);
+  --sol-secondary-hover: color-mix(in oklab, var(--soluma-slate) 92%, var(--soluma-ivory));
+  --sol-secondary-active: color-mix(in oklab, var(--soluma-slate) 85%, var(--soluma-ivory));
+  --sol-disabled: color-mix(in srgb, var(--soluma-ivory) 8%, transparent);
+  --sol-danger-hover: color-mix(in oklab, #F97770 76%, var(--soluma-paper));
+  --sol-danger-active: color-mix(in oklab, #F97770 88%, var(--soluma-graphite));
+
+  --sol-accent: var(--soluma-step-2);
+  --sol-accent-text: var(--soluma-graphite);
+  --sol-accent-hover: color-mix(in srgb, var(--ext-white) 16%, transparent);
+  --sol-accent-active: color-mix(in srgb, var(--soluma-graphite) 10%, transparent);
+
+  --sol-error-text: #FE8B83;
+  --sol-error-subtle: #422522;
+  --sol-error-border-subtle: #713C38;
+  --sol-success-subtle: #1B3422;
+  --sol-success-border-subtle: #2A5938;
+  --sol-warning-subtle: #382C11;
+  --sol-warning-border-subtle: #604914;
+  --sol-info-subtle: #212E45;
+  --sol-info-border-subtle: #364D76;
+
+  --sol-lit: var(--ext-graphite-raised);
+  --sol-read: color-mix(in srgb, var(--soluma-pitch) 30%, var(--soluma-graphite));
+  --sol-link: var(--soluma-ivory);
+  --sol-link-rule: var(--ext-neutral-56);
+
+  --sol-rail: var(--soluma-pitch);
+  --sol-rail-edge: var(--soluma-slate);
+
+  --sol-rise: linear-gradient(0deg, #F03D6E 0%, #FF6A45 36%, #FFA640 70%, #FFD873 100%);
+  --sol-dawn-rose: color-mix(in srgb, var(--soluma-rose) 13%, transparent);
+  --sol-dawn-amber: color-mix(in srgb, var(--soluma-coral) 11%, transparent);
+  --sol-dawn-gold: color-mix(in srgb, var(--soluma-amber) 12%, transparent);
+
+  /* Pitch on dark, where a shadow barely shows: the hairline does the work. */
+  --sol-shadow-sm: 0 1px 2px rgb(19 20 22 / 0.5), 0 3px 8px -2px rgb(19 20 22 / 0.5);
+  --sol-shadow-md: 0 2px 4px -1px rgb(19 20 22 / 0.5), 0 12px 28px -6px rgb(19 20 22 / 0.7);
+  --sol-shadow-lg: 0 4px 10px -2px rgb(19 20 22 / 0.6), 0 28px 64px -12px rgb(19 20 22 / 0.9);
+
+  --text-issue-grammar: #94B8F8;
+  --text-issue-style: #FFD873;
+  --text-issue-other: var(--soluma-mist);
+}
+
+/* States gain contrast: when the system asks for more, hover and pressed stand further from the
+   page and the quiet text steps up. (Bulwark's own More contrast setting pins the --color-* pairs;
+   skin.css gives those their Soluma values.) */
+@media (prefers-contrast: more) {
+  :root {
+    --sol-hover: color-mix(in srgb, var(--soluma-graphite) 10%, transparent);
+    --sol-active: color-mix(in srgb, var(--soluma-graphite) 16%, transparent);
+    --sol-text-tertiary: var(--soluma-stone);
+    --sol-text-disabled: var(--ext-neutral-56);
+    --sol-border-float: var(--ext-neutral-66);
+    --sol-link-rule: var(--soluma-graphite);
+    --sol-read: transparent;
+  }
+  .dark {
+    --sol-hover: color-mix(in srgb, var(--soluma-ivory) 14%, transparent);
+    --sol-active: color-mix(in srgb, var(--soluma-ivory) 20%, transparent);
+    --sol-text-tertiary: var(--soluma-mist);
+    --sol-text-disabled: var(--ext-neutral-66);
+    --sol-border-float: var(--ext-neutral-56);
+    --sol-link-rule: var(--soluma-ivory);
+    --sol-read: transparent;
+  }
+}
+
+/* A Windows contrast theme paints its own colours: no gradients, no glow. */
+@media (forced-colors: active) {
+  :root, .dark {
+    --sol-accent: none;
+    --sol-rise: linear-gradient(Highlight, Highlight);
+    --sol-dawn-rose: transparent;
+    --sol-dawn-amber: transparent;
+    --sol-dawn-gold: transparent;
+  }
+}
+
+/* A skeleton is the final layout in grey; it breathes, it does not shimmer. */
+@keyframes soluma-pulse {
+  50% { opacity: 0.5; }
+}
+
+/* The edge on the current item grows from its foot, as the steps do. */
+@keyframes soluma-step {
+  from { opacity: 0; transform: scaleY(0.3); }
+}
+
+/* The empty pane's glow comes up once. */
+@keyframes soluma-dawn {
+  from { opacity: 0; transform: translateY(6%); }
+}

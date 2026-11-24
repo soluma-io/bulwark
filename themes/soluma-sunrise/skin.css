@@ -1,0 +1,1000 @@
+/* Soluma Sunrise 1.4.1 — skin.css
+   Component rules the tokens cannot express. Colours come from theme.css (--sol-*) and the
+   manifest (--color-*, --soluma-*), so nothing here is written twice for dark.
+
+   How it is built:
+   - One scope, body[data-theme-skin="soluma-sunrise"], with native CSS nesting inside it.
+   - Hooks, in order of preference: [data-tour], [data-testid], [role], data-* state, then
+     Tailwind utility names. Nothing here moves, hides or restructures a component.
+   - Bulwark's utilities sit in @layer; these rules do not, so they win without !important.
+     The few !important marks answer an inline style or one of Bulwark's own unlayered rules.
+   - No ".dark body[…]" selectors: Bulwark's pre-paint copy of a skin rewrites the body scope
+     onto <html>, where such a selector cannot match. Where a rule needs to know the variant
+     it reads a token instead.
+   - A region can re-declare the --color-* tokens for everything inside it. The rail does. */
+
+body[data-theme-skin="soluma-sunrise"] {
+  text-rendering: optimizeLegibility;
+  font-optical-sizing: auto;
+  font-synthesis: none;
+
+  /* ════════ Base ════════ */
+
+  ::selection {
+    background-color: var(--soluma-gold);
+    color: var(--soluma-graphite);
+  }
+
+  :is(h1, h2, h3, h4) {
+    text-wrap: balance;
+  }
+
+  /* Larger type sits a little tighter, as in the brand's scale. */
+  :is(.text-lg, .text-xl) { letter-spacing: -0.012em; }
+  :is(.text-2xl, .text-3xl) { letter-spacing: -0.02em; }
+  :is(.text-4xl, .text-5xl) { letter-spacing: -0.028em; }
+
+  /* Small capitals are the brand's eyebrow: Geist Mono, 500, tracked out. */
+  .uppercase:is(.text-xs, [class*="text-[0.6"], [class*="text-[0.7"], [class*="text-[10px]"], [class*="text-[11px]"]) {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  /* Data reads in Mono: keys, codes, counts. */
+  :is(kbd, code, samp, .font-mono) {
+    font-family: var(--font-mono);
+  }
+
+  kbd {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xs);
+    background-color: var(--sol-sunken);
+    color: var(--color-muted-foreground);
+    font-weight: 500;
+    box-shadow: none;
+  }
+
+  /* Icons keep Tabler's own 2 px stroke; at 14 px and under it reads heavy. */
+  svg.tabler-icon:is(.w-3, .h-3, [class~="w-3.5"], [class~="h-3.5"]) {
+    stroke-width: 1.75;
+  }
+
+  /* ════════ Shadow & depth ════════
+     Flat by default. A shadow means "this floats", it is warm on light, and it comes with a
+     hairline. Setting --tw-shadow keeps Tailwind's ring utilities working. */
+
+  :is([class~="shadow-xs"], [class~="shadow-sm"], [class~="shadow"]) {
+    --tw-shadow: var(--sol-shadow-sm);
+  }
+  :is([class~="shadow-md"], [class~="shadow-lg"]) {
+    --tw-shadow: var(--sol-shadow-md);
+  }
+  :is([class~="shadow-xl"], [class~="shadow-2xl"]) {
+    --tw-shadow: var(--sol-shadow-lg);
+  }
+  /* Panes and rows are part of the page: they do not float. */
+  :is(section, [data-menu-row], [role="row"]):is([class*="shadow-sm"]) {
+    --tw-shadow: 0 0 #0000;
+  }
+
+  /* Scrims are Pitch, not black. */
+  :is([class~="bg-black/40"], [class~="bg-black/50"], [class~="bg-black/60"]):is(.fixed, .absolute).inset-0 {
+    background-color: var(--sol-scrim);
+  }
+
+  /* ════════ The rail: dark in both variants ════════
+     The whole token set is re-declared here, so every utility inside the rail (and any menu
+     that opens inside it) resolves to the dark palette without a rule of its own. */
+
+  :is(.w-14.bg-secondary, .w-14:has(> [data-window-rail])) {
+    color-scheme: dark;
+    --color-background: var(--sol-rail);
+    --color-foreground: var(--soluma-ivory);
+    --color-secondary: var(--sol-rail);
+    --color-secondary-foreground: var(--soluma-ivory);
+    --color-muted: color-mix(in srgb, var(--soluma-ivory) 9%, transparent);
+    --color-muted-foreground: var(--soluma-mist);
+    --color-accent: color-mix(in srgb, var(--soluma-ivory) 13%, transparent);
+    --color-accent-foreground: var(--soluma-ivory);
+    --color-primary: var(--soluma-ivory);
+    --color-primary-foreground: var(--soluma-graphite);
+    --color-card: var(--ext-graphite-raised);
+    --color-card-foreground: var(--soluma-ivory);
+    --color-popover: var(--soluma-slate);
+    --color-popover-foreground: var(--soluma-ivory);
+    --color-border: color-mix(in srgb, var(--soluma-ivory) 14%, transparent);
+    --color-input: var(--ext-neutral-56);
+    --color-ring: var(--soluma-ivory);
+    --focus-ring-color: var(--soluma-ivory);
+    --color-destructive: #F97770;
+    --color-destructive-foreground: var(--soluma-graphite);
+    --color-success: #79CD91;
+    --color-warning: var(--soluma-gold);
+    --color-info: #94B8F8;
+    --color-unread: var(--soluma-coral);
+    --sol-hover: color-mix(in srgb, var(--soluma-ivory) 7%, transparent);
+    --sol-active: color-mix(in srgb, var(--soluma-ivory) 12%, transparent);
+    --sol-border-float: color-mix(in srgb, var(--soluma-ivory) 14%, transparent);
+
+    background-color: var(--sol-rail);
+    color: var(--soluma-ivory);
+    /* The app sets this edge inline. */
+    border-right-color: var(--sol-rail-edge) !important;
+
+    :is(a, button):not(.rounded-full) {
+      border-radius: var(--radius-lg);
+    }
+
+    /* Current app: an Ivory slab, and the Sunrise as its edge. */
+    [aria-current="page"] {
+      position: relative;
+      background-color: var(--color-accent);
+      color: var(--soluma-ivory);
+    }
+    [aria-current="page"]::before {
+      content: "";
+      position: absolute;
+      inset-block: 10px;
+      inset-inline-start: 0;
+      width: 3px;
+      border-radius: 0 var(--radius-full) var(--radius-full) 0;
+      background-image: var(--sol-rise);
+      transform-origin: center bottom;
+      animation: soluma-step 300ms var(--soluma-ease-out) backwards;
+      pointer-events: none;
+    }
+    [aria-current="page"]:dir(rtl)::before {
+      border-radius: var(--radius-full) 0 0 var(--radius-full);
+    }
+
+    /* The rule above the shortcuts button. */
+    .border-t {
+      border-color: var(--color-border);
+    }
+  }
+
+  /* Unread counters on the navigation are a brand mark, not alarm red: the middle step with a
+     Graphite numeral (5.8 : 1), in Mono like every count. */
+  [data-tour^="nav-"] :is(.bg-red-500, .bg-red-600, .bg-destructive) {
+    background-color: var(--soluma-amber);
+    background-image: var(--soluma-step-2);
+    color: var(--soluma-graphite);
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  /* ════════ Side panes: folders, settings, contacts, calendar, files ════════
+     Sunken (Ivory / near-Pitch). Hover is a step down, selected is lit. */
+
+  :is(.border-e.bg-secondary, .flex-col.h-full.bg-secondary) {
+    --color-muted: var(--sol-secondary);
+
+    /* Section names are eyebrows. */
+    button[data-section-name] > span {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      line-height: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-muted-foreground);
+    }
+
+    /* The other panes name their sections in small muted type: the same eyebrow. */
+    button.text-start > span.text-xs.font-medium.text-muted-foreground {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* Their active item is marked only with bg-accent; give it the same lit row and edge. */
+    :is(button, a).bg-accent:not([data-testid="folder-row"] *) {
+      background-color: var(--sol-lit);
+      background-image: var(--sol-rise);
+      background-position: left top;
+      background-repeat: no-repeat;
+      background-size: 3px 100%;
+      color: var(--color-foreground);
+      box-shadow: 0 0 0 1px var(--color-border);
+    }
+    :is(button, a).bg-accent:not([data-testid="folder-row"] *):dir(rtl) {
+      background-position: right top;
+    }
+  }
+
+  [data-testid="folder-row"] {
+    border-inline-start-color: transparent;
+    transition-property: background-color, color;
+  }
+  [data-testid="folder-row"]:not([data-selected="true"]):hover {
+    background-color: var(--sol-hover);
+  }
+  /* Selected folder: lit, with the Sunrise along its start edge. The app's 2 px start border
+     stays (transparent) so names do not shift; the edge is a background stripe over it. */
+  [data-testid="folder-row"][data-selected="true"] {
+    background-color: var(--sol-lit);
+    background-image: var(--sol-rise);
+    background-origin: border-box;
+    background-position: left top;
+    background-repeat: no-repeat;
+    background-size: 3px 100%;
+    border-inline-start-color: transparent;
+    box-shadow: inset 0 1px 0 var(--color-border), inset 0 -1px 0 var(--color-border);
+    color: var(--color-foreground);
+  }
+  [data-testid="folder-row"][data-selected="true"]:dir(rtl) {
+    background-position: right top;
+  }
+
+  /* Counts are numerals in Mono. */
+  [data-testid="folder-counts"] > span {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0;
+  }
+
+  /* ════════ Message list ════════
+     Unread stays on the page ground; read mail steps back; the open message takes the Gold
+     wash and the Sunrise edge. Rows are set like a mail client's: weight by role (who, what,
+     the rest), the avatar beside the first two lines, and tight. */
+
+  [data-tour="email-list"] {
+    /* Density for this list alone. Bulwark sets the density variables on <html>; they are
+       capped here and handed to the rows, so the padding, the avatar gutter and the unread
+       dot (which all read them) stay in step. A tighter setting in Settings > Appearance
+       still wins; folders, the reading pane and every other list keep the user's density. */
+    --sol-list-py: min(var(--density-item-py), 8px);
+    --sol-list-gap: min(var(--density-item-gap), 10px);
+
+    [data-menu-row]:not([data-mv-row], [data-mv-mobile-row]) {
+      --density-item-py: var(--sol-list-py);
+      --density-item-gap: var(--sol-list-gap);
+      --list-item-height: auto;
+    }
+
+    /* Who: SemiBold ink, read or unread. The dot and the ground say which is unread. */
+    [data-row-text] > .flex-1 > .justify-between span.truncate.text-sm {
+      font-weight: 600;
+      line-height: 1.125rem;
+      color: var(--color-foreground);
+    }
+    /* What: Regular ink, a step smaller. */
+    [data-row-text] > .flex-1 > .mb-1:not(.justify-between) > span.truncate.text-sm {
+      font-size: 0.8125rem;
+      line-height: 1.0625rem;
+      font-weight: 400;
+      color: var(--color-foreground);
+    }
+    /* The rest: Regular, quiet, and two lines of it. */
+    [data-row-text] > .flex-1 p[class*="line-clamp"] {
+      font-size: 0.8125rem;
+      line-height: 1.0625rem;
+      font-weight: 400;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+    /* One pixel between the lines instead of four. */
+    [data-row-text] > .flex-1 > .mb-1 {
+      margin-bottom: 1px;
+    }
+    [data-row-text] > .flex-1 > [class~="mt-1.5"] {
+      margin-top: 4px;
+    }
+
+    /* A tag beside the name is as tall as the name's line (18 px), so a tagged row is no
+       taller than a plain one. */
+    [data-row-text] > .flex-1 > .mb-1 span[class*="1lh+0.25rem"] {
+      height: 1.125rem;
+    }
+    [data-row-text] > .flex-1 > .mb-1 span[class*="tag-fill-"] {
+      padding-block: 0;
+      line-height: 1rem;
+    }
+
+    /* The avatar is 30 px and sits beside the first two lines (18 + 1 + 17 = 36 px), 3 px
+       down from the top of the name so its centre falls between who and what. */
+    [data-select-gutter] {
+      align-items: flex-start;
+    }
+    [data-select-gutter] > .relative {
+      margin-top: 3px;
+    }
+    [data-select-gutter] [role="checkbox"] {
+      --tw-shadow: 0 0 #0000;
+    }
+    [data-select-gutter] [role="checkbox"] > .rounded-full.w-10.h-10 {
+      width: 1.875rem;
+      height: 1.875rem;
+      font-size: 0.6875rem;
+    }
+
+    /* Hover actions. Floating style: the inverse ground, like a tooltip, so the smallest
+       thing on the row is found at once (Graphite on light, Ivory on dark).
+       The colour tokens are re-declared on the box itself rather than on each button, so
+       whatever is put in it is drawn the same way: Bulwark's own actions, a team mailbox's
+       (assign, take, done) and any plugin's. They all ask for the quiet text colour, which
+       inside the box is the full inverse ink. */
+    [data-menu-row] .rounded-lg.shadow-md.bg-background:has(:is([data-testid^="hover-"], [data-team-hover-actions], [data-plugin-actions])) {
+      --color-foreground: var(--sol-inverse-text);
+      --color-muted-foreground: var(--sol-inverse-text);
+      --color-primary: var(--sol-inverse-text);
+      --color-primary-foreground: var(--sol-inverse);
+      --color-destructive: var(--sol-inverse-danger);
+      --color-muted: color-mix(in srgb, var(--sol-inverse-text) 16%, transparent);
+      --color-accent: color-mix(in srgb, var(--sol-inverse-text) 16%, transparent);
+
+      background-color: var(--sol-inverse);
+      border-color: transparent;
+      border-radius: var(--radius-md);
+      color: var(--sol-inverse-text);
+      --tw-shadow: var(--sol-shadow-md);
+
+      & > .absolute.inset-0 {
+        background-color: transparent;
+      }
+      /* Small, so it covers little of the row: 14 px icons in 22 px buttons. */
+      & > .relative {
+        padding: 2px 3px;
+      }
+      & button {
+        height: auto;
+        padding: 4px;
+        border-radius: var(--radius-sm);
+      }
+      & button > svg {
+        width: 0.875rem;
+        height: 0.875rem;
+      }
+      & button:hover:not(:disabled) {
+        background-color: var(--color-muted);
+      }
+    }
+    /* A finger gets the app's own size back. */
+    @media (pointer: coarse) {
+      [data-menu-row] .rounded-lg.shadow-md.bg-background:has(:is([data-testid^="hover-"], [data-team-hover-actions], [data-plugin-actions])) button {
+        padding: 6px;
+      }
+      [data-menu-row] .rounded-lg.shadow-md.bg-background:has(:is([data-testid^="hover-"], [data-team-hover-actions], [data-plugin-actions])) button > svg {
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+    /* Strip style (it fades into the row by design): every icon in it is ink, not grey. */
+    [data-hover-strip] {
+      --color-muted-foreground: var(--color-foreground);
+    }
+    [data-hover-strip] button:hover:not(:disabled) {
+      background-color: var(--sol-active);
+    }
+
+    [data-menu-row] {
+      transition-property: background-color;
+    }
+    [data-menu-row][data-unread="false"].bg-background:not([data-mv-row], [data-mv-mobile-row], :hover) {
+      background-color: var(--sol-read);
+    }
+    [data-menu-row][data-unread="true"][class~="bg-accent/30"]:not([aria-current="true"], [aria-selected="true"], [data-mv-row], [data-mv-mobile-row], :hover) {
+      background-color: var(--color-background);
+    }
+    [data-menu-row]:hover:not([aria-current="true"]) {
+      background-color: var(--color-muted);
+    }
+
+    [data-menu-row][aria-current="true"] {
+      background-color: var(--color-selection);
+      color: var(--color-selection-foreground);
+    }
+    [data-menu-row][aria-current="true"]::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: 3px;
+      background-image: var(--sol-rise);
+      transform-origin: center bottom;
+      animation: soluma-step 300ms var(--soluma-ease-out) backwards;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Times are data, and quiet beside the name. */
+    .tabular-nums {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    /* The thread count is a quiet count, even when the thread has unread mail: the dot says so. */
+    span.bg-primary.text-primary-foreground {
+      font-family: var(--font-mono);
+    }
+  }
+
+  /* ════════ Reading pane ════════ */
+
+  /* One ground: no grey band below a short message. */
+  [data-tour="email-viewer"] :is([data-reader-scroll], .overflow-auto)[class~="bg-muted/30"] {
+    background-color: var(--color-background);
+  }
+
+  [data-reader-subject] :is(h1, h2, h3) {
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+
+  /* Blocked images notice: one line instead of three. The icon and the two buttons step down
+     to 28 px, the label and the sentence share a line, and the buttons sit at its end; they
+     drop to a second line only when the pane is too narrow for both. (The single-message
+     reader's notice only: the thread view's is one line already.) */
+  [data-testid="external-content-notice"].items-start {
+    align-items: center;
+    gap: 10px;
+    padding-block: 2px;
+
+    & > .rounded-full {
+      width: 1.75rem;
+      height: 1.75rem;
+      --tw-shadow: 0 0 #0000;
+    }
+    & > .rounded-full > svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    & > .flex-1 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      column-gap: 12px;
+      row-gap: 6px;
+    }
+    & > .flex-1 > * {
+      margin-block: 0;
+    }
+    /* Label and sentence, side by side. */
+    & > .flex-1 > :first-child {
+      display: flex;
+      flex: 1 1 auto;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: 8px;
+      min-width: 0;
+    }
+    & > .flex-1 > :first-child > :first-child {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    /* The buttons. */
+    & > .flex-1 > .flex-wrap {
+      flex: 0 0 auto;
+      margin-inline-start: auto;
+      padding-top: 0;
+    }
+    & > .flex-1 > .flex-wrap > button {
+      min-height: 1.75rem;
+      padding: 4px 10px;
+      font-size: 0.8125rem;
+      line-height: 1.125rem;
+    }
+  }
+  /* "Always trust this sender" reads "Trust sender". A theme cannot change the app's words, so
+     the button's own text is set to zero size and the short label is drawn after it. English
+     only: any other language keeps Bulwark's own wording. The empty text after the slash keeps
+     a screen reader from saying it twice: it still reads the full original label. */
+  [data-testid="external-content-notice"].items-start > .flex-1 > .flex-wrap > button:has(> svg.tabler-icon-shield-check):lang(en) {
+    gap: 0;
+    font-size: 0;
+  }
+  [data-testid="external-content-notice"].items-start > .flex-1 > .flex-wrap > button:has(> svg.tabler-icon-shield-check):lang(en) > svg {
+    margin-inline-end: 6px;
+  }
+  [data-testid="external-content-notice"].items-start > .flex-1 > .flex-wrap > button:has(> svg.tabler-icon-shield-check):lang(en)::after {
+    content: "Trust sender" / "";
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+  }
+  /* A finger still gets a 36 px target. */
+  @media (pointer: coarse) {
+    [data-testid="external-content-notice"].items-start > .flex-1 > .flex-wrap > button {
+      min-height: 2.25rem;
+    }
+  }
+
+  /* The empty pane: first light. A low glow in the brand's order, Rose at the horizon, and it
+     comes up once. */
+  [class~="bg-gradient-to-br"][class~="from-muted/30"][class~="to-muted/50"] {
+    position: relative;
+    isolation: isolate;
+    background-color: var(--color-background);
+    background-image: none;
+    overflow: hidden;
+  }
+  [class~="bg-gradient-to-br"][class~="from-muted/30"][class~="to-muted/50"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      radial-gradient(120% 60% at 50% 118%, var(--sol-dawn-gold) 0%, var(--sol-dawn-amber) 34%, var(--sol-dawn-rose) 58%, transparent 78%);
+    animation: soluma-dawn 700ms var(--soluma-ease-out) backwards;
+    pointer-events: none;
+  }
+
+  /* Links in mail text and in the app: ink with a rule under it, never colour alone. */
+  :is(.email-content, .email-content-text, .email-reply-quote) a {
+    color: var(--sol-link);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    text-decoration-color: var(--sol-link-rule);
+  }
+  :is(.email-content, .email-content-text, .email-reply-quote) a:hover {
+    text-decoration-color: currentColor;
+  }
+  /* A message shown on its own light paper keeps dark links whatever the variant. */
+  .email-content-light a {
+    color: var(--soluma-graphite);
+    text-decoration-color: var(--ext-neutral-66);
+  }
+  a[href].text-primary:not([role], [data-tour]),
+  .a11y-link,
+  button.text-primary[class~="hover:underline"] {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    text-decoration-color: var(--sol-link-rule);
+  }
+  :is(a[href].text-primary:not([role], [data-tour]), .a11y-link, button.text-primary[class~="hover:underline"]):hover {
+    text-decoration-color: currentColor;
+  }
+
+  .email-content blockquote,
+  .email-reply-quote {
+    border-color: var(--color-border);
+    color: var(--color-muted-foreground);
+  }
+  .email-content :is(pre, code) {
+    font-family: var(--font-mono);
+    background-color: var(--sol-sunken);
+    border-radius: var(--radius-sm);
+  }
+
+  /* ════════ Buttons ════════ */
+
+  /* Primary is ink. Hover stands further from the page, never closer. */
+  :is(button, a, [role="button"]).bg-primary.text-primary-foreground {
+    transition-property: background-color, color, box-shadow, translate;
+  }
+  :is(button, a, [role="button"]).bg-primary.text-primary-foreground:hover:not(:disabled, [aria-disabled="true"]) {
+    background-color: var(--sol-primary-hover);
+  }
+  :is(button, a, [role="button"]).bg-primary.text-primary-foreground:active:not(:disabled, [aria-disabled="true"]) {
+    background-color: var(--sol-primary-active);
+    translate: 0 1px;
+  }
+  /* Disabled is grey, not faded ink. */
+  button.bg-primary:is(:disabled, [aria-disabled="true"]) {
+    background-color: var(--sol-disabled);
+    color: var(--sol-text-disabled);
+    opacity: 1;
+  }
+
+  /* Secondary is Sand / Slate, wherever a button asks for the secondary ground. */
+  :is(button, a, [role="button"]).bg-secondary {
+    background-color: var(--sol-secondary);
+  }
+  :is(button, a, [role="button"]).bg-secondary:hover:not(:disabled) {
+    background-color: var(--sol-secondary-hover);
+  }
+  :is(button, a, [role="button"]).bg-secondary:active:not(:disabled) {
+    background-color: var(--sol-secondary-active);
+  }
+
+  :is(button, a, [role="button"]).bg-destructive:hover:not(:disabled) {
+    background-color: var(--sol-danger-hover);
+  }
+  :is(button, a, [role="button"]).bg-destructive:active:not(:disabled) {
+    background-color: var(--sol-danger-active);
+  }
+  /* Hover on a destructive ghost button is the error tint, not Tailwind's red-50. */
+  :is([class~="hover:bg-red-50"], [class~="hover:bg-destructive/10"]):hover {
+    background-color: var(--sol-error-subtle);
+    color: var(--sol-error-text);
+  }
+
+  /* Compose is the one warm thing on the page: the middle step, Graphite label. The hover and
+     pressed layers are an inset wash, so the gradient itself never changes. */
+  [data-tour="compose-button"] {
+    background-color: var(--soluma-amber);
+    background-image: var(--sol-accent);
+    background-origin: border-box;
+    border-color: transparent;
+    color: var(--sol-accent-text);
+    font-weight: 500;
+    /* Flat in the folder pane; only the floating one casts a shadow. */
+    --tw-shadow: 0 0 #0000;
+    transition-property: box-shadow, translate;
+  }
+  [data-tour="compose-button"][data-floating-compose] {
+    --tw-shadow: var(--sol-shadow-md);
+  }
+  [data-tour="compose-button"]:hover:not(:disabled) {
+    background-color: var(--soluma-amber);
+    box-shadow: inset 0 0 0 99px var(--sol-accent-hover), var(--tw-shadow);
+  }
+  [data-tour="compose-button"]:active:not(:disabled) {
+    background-color: var(--soluma-amber);
+    box-shadow: inset 0 0 0 99px var(--sol-accent-active), var(--tw-shadow);
+    translate: 0 1px;
+  }
+  [data-tour="compose-button"] svg {
+    color: var(--sol-accent-text);
+  }
+
+  /* A chosen option in a segmented control is ink: a choice, not a call to action. */
+  :is(button[aria-pressed="true"], [role="radio"][aria-checked="true"], [role="tab"][aria-selected="true"]).bg-primary {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  /* ════════ Fields ════════
+     A field sits on its own ground with a control edge that clears 3 : 1; focus is ink. */
+
+  :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"]), select, textarea):is(.border, .border-input, [class~="border-border"]) {
+    background-color: var(--sol-field);
+    border-color: var(--sol-border-control);
+    transition-property: border-color, box-shadow, background-color;
+  }
+  :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"]), select, textarea):is(.border, .border-input, [class~="border-border"]):hover:not(:disabled, :focus) {
+    border-color: var(--sol-border-control-hover);
+  }
+  :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"]), select, textarea):is(.border, .border-input, [class~="border-border"]):focus {
+    border-color: var(--sol-border-strong);
+    --tw-ring-color: var(--sol-border-strong);
+  }
+  :is(input, select, textarea):is([aria-invalid="true"], .border-destructive, [class*="border-red-"]) {
+    border-color: var(--color-destructive);
+    box-shadow: inset 0 0 0 1px var(--color-destructive);
+  }
+  :is(input, select, textarea):disabled:is(.border, .border-input) {
+    background-color: var(--sol-field-disabled);
+    border-color: var(--color-border);
+    color: var(--sol-text-disabled);
+    opacity: 1;
+  }
+  :is(input, textarea)::placeholder {
+    color: var(--sol-text-tertiary);
+    opacity: 1;
+  }
+
+  :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) {
+    accent-color: var(--color-primary);
+  }
+
+  /* ════════ Switch ════════
+     Off: a field with a control edge and a quiet thumb. On: ink track, Ivory / Graphite thumb.
+     The edge is an inset shadow, so the thumb's travel is unchanged. */
+
+  [role="switch"] {
+    transition-property: background-color, box-shadow;
+    transition-duration: 200ms;
+  }
+  [role="switch"][aria-checked="false"] {
+    background-color: var(--sol-field);
+    box-shadow: inset 0 0 0 1px var(--sol-border-control);
+  }
+  [role="switch"][aria-checked="false"]:hover {
+    box-shadow: inset 0 0 0 1px var(--sol-border-control-hover);
+  }
+  [role="switch"][aria-checked="false"] > span {
+    background-color: var(--sol-border-control-hover);
+    box-shadow: none;
+  }
+  [role="switch"][aria-checked="true"] {
+    background-color: var(--color-primary);
+  }
+  [role="switch"][aria-checked="true"]:hover {
+    background-color: var(--sol-primary-hover);
+  }
+  [role="switch"][aria-checked="true"] > span {
+    background-color: var(--color-primary-foreground);
+    box-shadow: none;
+  }
+
+  /* ════════ What floats: menus, listboxes, dialogs, toasts, tooltips ════════
+     The overlay ground, a hairline and a shadow. */
+
+  /* On dark a hairline in the page's border colour disappears on the overlay ground, so
+     everything inside a floating surface takes the floating hairline. */
+  :is([role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], .toast-item, .bg-popover) {
+    --color-border: var(--sol-border-float);
+  }
+  /* A dialog is the overlay ground all the way through: its header, footer and sticky strips
+     ask for the page ground, so that token is re-declared inside it. */
+  :is([role="dialog"], [role="alertdialog"]):is(.bg-background, .bg-card, .bg-popover) {
+    --color-background: var(--color-popover);
+    --color-card: var(--color-popover);
+    background-color: var(--color-popover);
+    color: var(--color-popover-foreground);
+  }
+
+  :is([role="menu"], [role="listbox"]):is(.fixed, .absolute, [class*="shadow"]) {
+    background-color: var(--color-popover);
+    color: var(--color-popover-foreground);
+    border: 1px solid var(--sol-border-float);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--sol-shadow-md);
+  }
+  :is([role="menu"], [role="listbox"]) :is([role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="option"]) {
+    border-radius: var(--radius-md);
+  }
+  /* Entries sit 4 px in from the menu's edge, so the hover shape is concentric with its corner.
+     The label keeps its place: 4 px of margin replaces 4 px of the entry's own padding. The
+     width is spelled out because an entry is a <button>, and a button with width: auto is only
+     as wide as its label. */
+  [role="menu"] :is([role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]).flex.w-full.px-3 {
+    width: calc(100% - 8px);
+    margin-inline: 4px;
+    padding-inline: 8px;
+  }
+  :is([role="menu"], [role="listbox"]) :is([role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="option"]):is(:hover, :focus-visible, [data-highlighted], [aria-selected="true"]):not([aria-disabled="true"], :disabled) {
+    background-color: var(--sol-hover);
+  }
+  :is([role="menu"], [role="listbox"]) :is([role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="option"]):active:not([aria-disabled="true"], :disabled) {
+    background-color: var(--sol-active);
+  }
+  /* A destructive entry keeps its colour and takes the error tint. */
+  [role="menu"] [role="menuitem"]:is(.text-destructive, :has(> svg.text-destructive)):is(:hover, :focus-visible) {
+    background-color: var(--sol-error-subtle);
+    color: var(--sol-error-text);
+  }
+  [role="menu"] [role="separator"] {
+    background-color: var(--color-border);
+  }
+  /* Menu group labels are eyebrows too. */
+  [role="menu"] [role="presentation"]:is(.text-xs, .font-semibold):not(:has(*)) {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted-foreground);
+  }
+
+  :is([role="dialog"], [role="alertdialog"]):is([class*="shadow"], [class*="rounded"]) {
+    border-color: var(--sol-border-float);
+    --tw-shadow: var(--sol-shadow-lg);
+  }
+  :is([role="dialog"], [role="alertdialog"])[class*="rounded-"]:not([class*="rounded-none"], [class*="rounded-t"], [class*="rounded-b"], [class*="rounded-s"], [class*="rounded-e"]) {
+    border-radius: var(--radius-3xl);
+  }
+  :is([role="dialog"], [role="alertdialog"]) :is(h1, h2, h3):first-of-type {
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
+
+  .toast-item {
+    background-color: var(--color-popover);
+    color: var(--color-popover-foreground);
+    border: 1px solid var(--sol-border-float);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--sol-shadow-md);
+  }
+
+  /* The tooltip is the inverse ground: the smallest thing on the page has to be found at once. */
+  [role="tooltip"] {
+    background-color: var(--sol-inverse);
+    color: var(--sol-inverse-text);
+    border: 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    box-shadow: none;
+  }
+  [role="tooltip"] kbd {
+    background-color: transparent;
+    border-color: color-mix(in srgb, currentColor 32%, transparent);
+    color: inherit;
+  }
+
+  /* Cards are flat, on the raised ground, with a hairline. */
+  .bg-card.border {
+    border-color: var(--color-border);
+  }
+
+  /* ════════ Status ════════ */
+
+  /* The calendar's "now" line marks time, not danger: it takes the brand. */
+  .pointer-events-none > .flex.items-center > .bg-destructive:is(.h-px, .w-2) {
+    background-color: var(--soluma-coral);
+  }
+
+  /* Progress is ink; a spinner is quiet. */
+  .animate-spin {
+    color: var(--color-muted-foreground);
+  }
+
+  /* ════════ Composer ════════ */
+
+  [data-editor-toolbar] {
+    border-color: var(--color-border);
+  }
+  [data-editor-toolbar] button:is([aria-pressed="true"], .bg-accent, .bg-muted) {
+    background-color: var(--sol-active);
+    color: var(--color-foreground);
+  }
+  .tiptap :is(code, pre) {
+    font-family: var(--font-mono);
+  }
+  .tiptap a {
+    color: var(--sol-link);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+
+  /* ════════ This theme's own card in Settings > Appearance ════════
+     Bulwark paints the card from a handful of tokens (see theme.css). While this theme is
+     active the card can be exact: the dark rail, the Gold wash with its Sunrise edge, Compose,
+     and first light in the reading pane. The colours on the card's parts are inline styles,
+     hence the !important marks. Children, in order: rail, folders, message list, reading pane. */
+
+  [data-search-label="Soluma Sunrise"] [class~="aspect-[16/10]"] > .flex {
+    & > :nth-child(1) {
+      background-color: var(--sol-rail) !important;
+      border-right-color: var(--sol-rail-edge) !important;
+    }
+    & > :nth-child(1) > * {
+      background-color: var(--soluma-mist) !important;
+      opacity: 0.55 !important;
+    }
+    & > :nth-child(1) > :first-child {
+      background-color: var(--soluma-ivory) !important;
+      background-image: var(--sol-rise);
+      opacity: 1 !important;
+    }
+    & > :nth-child(2) {
+      background-color: var(--color-secondary) !important;
+    }
+    & > :nth-child(3) {
+      position: relative;
+    }
+    & > :nth-child(3) > :first-child {
+      background-color: var(--color-selection) !important;
+      background-image: var(--sol-rise);
+      background-position: left top;
+      background-repeat: no-repeat;
+      background-size: 2px 100%;
+    }
+    & > :nth-child(3)::after {
+      content: "";
+      position: absolute;
+      inset-inline-end: 7%;
+      bottom: 7%;
+      width: 34%;
+      height: 11%;
+      border-radius: var(--radius-full);
+      background-image: var(--soluma-step-2);
+    }
+    & > :nth-child(4) {
+      background-image: radial-gradient(130% 70% at 50% 125%, var(--sol-dawn-gold) 0%, var(--sol-dawn-amber) 36%, var(--sol-dawn-rose) 60%, transparent 80%);
+    }
+  }
+
+  /* ════════ Scrollbars ════════ */
+
+  ::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--color-muted-foreground) 34%, transparent);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-muted-foreground);
+  }
+}
+
+/* ════════ More contrast ════════
+   Bulwark's setting (and the system preference) pins some --color-* tokens to its stock blue
+   and grey, on a selector that outranks a theme's :root. These give those tokens their Soluma
+   values instead: pure ink, darker edges, no tinted grounds. */
+
+html:root[data-contrast="more"]:has(body[data-theme-skin="soluma-sunrise"]),
+html:root[data-contrast="more"][data-theme-skin="soluma-sunrise"] {
+  --color-foreground: #000000;
+  --color-muted-foreground: #34363C;
+  --color-border: #79746D;
+  --color-input: #34363C;
+  --color-sidebar-border: #79746D;
+  --color-ring: #000000;
+  --focus-ring-color: #000000;
+  --color-primary: #000000;
+  --color-primary-foreground: #FFFFFF;
+  --color-unread: #B7191C;
+  --color-destructive: #B7191C;
+  --color-accent-foreground: #000000;
+  --color-selection-foreground: #000000;
+  --color-popover-foreground: #000000;
+  --color-card-foreground: #000000;
+  --color-sidebar-foreground: #000000;
+  --sol-link-rule: #000000;
+  --sol-read: transparent;
+}
+
+html.dark:root[data-contrast="more"]:has(body[data-theme-skin="soluma-sunrise"]),
+html.dark:root[data-contrast="more"][data-theme-skin="soluma-sunrise"] {
+  --color-foreground: #FFFFFF;
+  --color-muted-foreground: #F6F0E6;
+  --color-border: #A8A39A;
+  --color-input: #F6F0E6;
+  --color-sidebar-border: #A8A39A;
+  --color-ring: #FFFFFF;
+  --focus-ring-color: #FFFFFF;
+  --color-primary: #FFFFFF;
+  --color-primary-foreground: #000000;
+  --color-unread: #FFD873;
+  --color-destructive: #FE8B83;
+  --color-accent-foreground: #FFFFFF;
+  --color-selection-foreground: #FFFFFF;
+  --color-popover-foreground: #FFFFFF;
+  --color-card-foreground: #FFFFFF;
+  --color-sidebar-foreground: #FFFFFF;
+  --sol-link-rule: #FFFFFF;
+  --sol-read: transparent;
+}
+
+@media (prefers-contrast: more) {
+  html:root:not([data-contrast="normal"]):has(body[data-theme-skin="soluma-sunrise"]),
+  html:root:not([data-contrast="normal"])[data-theme-skin="soluma-sunrise"] {
+    --color-foreground: #000000;
+    --color-muted-foreground: #34363C;
+    --color-border: #79746D;
+    --color-input: #34363C;
+    --color-sidebar-border: #79746D;
+    --color-ring: #000000;
+    --focus-ring-color: #000000;
+    --color-primary: #000000;
+    --color-primary-foreground: #FFFFFF;
+    --color-unread: #B7191C;
+    --color-destructive: #B7191C;
+    --color-accent-foreground: #000000;
+    --color-selection-foreground: #000000;
+    --color-popover-foreground: #000000;
+    --color-card-foreground: #000000;
+    --color-sidebar-foreground: #000000;
+  }
+  html.dark:root:not([data-contrast="normal"]):has(body[data-theme-skin="soluma-sunrise"]),
+  html.dark:root:not([data-contrast="normal"])[data-theme-skin="soluma-sunrise"] {
+    --color-foreground: #FFFFFF;
+    --color-muted-foreground: #F6F0E6;
+    --color-border: #A8A39A;
+    --color-input: #F6F0E6;
+    --color-sidebar-border: #A8A39A;
+    --color-ring: #FFFFFF;
+    --focus-ring-color: #FFFFFF;
+    --color-primary: #FFFFFF;
+    --color-primary-foreground: #000000;
+    --color-unread: #FFD873;
+    --color-destructive: #FE8B83;
+    --color-accent-foreground: #FFFFFF;
+    --color-selection-foreground: #FFFFFF;
+    --color-popover-foreground: #FFFFFF;
+    --color-card-foreground: #FFFFFF;
+    --color-sidebar-foreground: #FFFFFF;
+  }
+}
+
+/* A Windows contrast theme: the system's colours stand, and the gradients step aside. */
+@media (forced-colors: active) {
+  body[data-theme-skin="soluma-sunrise"] [data-tour="compose-button"] {
+    background-image: none;
+  }
+  body[data-theme-skin="soluma-sunrise"] :is([data-testid="folder-row"][data-selected="true"], [data-menu-row][aria-current="true"]) {
+    forced-color-adjust: none;
+    background-color: Highlight;
+    color: HighlightText;
+    background-image: none;
+  }
+}
