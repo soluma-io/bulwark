@@ -1,11 +1,12 @@
-/* Soluma Sunrise 1.4.1 — skin.css
+/* Soluma Sunrise 1.6.0 — skin.css
    Component rules the tokens cannot express. Colours come from theme.css (--sol-*) and the
    manifest (--color-*, --soluma-*), so nothing here is written twice for dark.
 
    How it is built:
    - One scope, body[data-theme-skin="soluma-sunrise"], with native CSS nesting inside it.
    - Hooks, in order of preference: [data-tour], [data-testid], [role], data-* state, then
-     Tailwind utility names. Nothing here moves, hides or restructures a component.
+     Tailwind utility names. Nothing here changes what a component does. A few rules do
+     tighten one into fewer lines (message rows, the notices and attachments above a message).
    - Bulwark's utilities sit in @layer; these rules do not, so they win without !important.
      The few !important marks answer an inline style or one of Bulwark's own unlayered rules.
    - No ".dark body[…]" selectors: Bulwark's pre-paint copy of a skin rewrites the body scope
@@ -170,8 +171,12 @@ body[data-theme-skin="soluma-sunrise"] {
   :is(.border-e.bg-secondary, .flex-col.h-full.bg-secondary) {
     --color-muted: var(--sol-secondary);
 
-    /* Section names are eyebrows. */
-    button[data-section-name] > span {
+    /* Section names are eyebrows: Bulwark's own (Folders, Tags) and the heading it draws for
+       a plugin's sidebar section. Only the heading: a plugin's rows and its header controls
+       are drawn inside the plugin's own sandboxed frame, which gets this theme's colour
+       tokens and font but none of these rules. */
+    button[data-section-name] > span,
+    [data-plugin-sidebar-section] > .flex > button > span {
       font-family: var(--font-mono);
       font-size: 0.6875rem;
       line-height: 1rem;
@@ -179,6 +184,11 @@ body[data-theme-skin="soluma-sunrise"] {
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--color-muted-foreground);
+    }
+
+    /* A plugin section's heading row lines up like the built-in ones. */
+    [data-plugin-sidebar-section] > .flex.items-end {
+      align-items: center;
     }
 
     /* The other panes name their sections in small muted type: the same eyebrow. */
@@ -425,83 +435,229 @@ body[data-theme-skin="soluma-sunrise"] {
     letter-spacing: -0.012em;
   }
 
-  /* Blocked images notice: one line instead of three. The icon and the two buttons step down
-     to 28 px, the label and the sentence share a line, and the buttons sit at its end; they
-     drop to a second line only when the pane is too narrow for both. (The single-message
-     reader's notice only: the thread view's is one line already.) */
-  [data-testid="external-content-notice"].items-start {
-    align-items: center;
-    gap: 10px;
-    padding-block: 2px;
+  /* ════════ Notices above a message ════════
+     The band under the sender holds whatever Bulwark has to say about a message: blocked
+     images, a read-receipt request, a calendar invitation, parcel, booking and order cards.
+     They are all built on one skeleton (a round icon, then a small label, a title, optional
+     detail lines and a row of actions), so these rules address the skeleton, not any one
+     notice. Whatever lands in the band is set the same way:
+       icon 28 px · label and title on one line · actions at the end of that line (they drop
+       to their own line only when the pane is too narrow) · detail lines beneath, full width.
+     The actions are moved up with "order"; in the markup they still come after the details. */
 
-    & > .rounded-full {
+  :is([data-reader-notices], [data-testid="structured-mail-cards"]) {
+    /* The stacks: notices in the band, cards in a set. */
+    &.flex-col.gap-3,
+    & .flex-col.gap-3 {
+      gap: 6px;
+    }
+    & .py-1 {
+      padding-block: 2px;
+    }
+
+    /* Icon. */
+    & .flex.gap-3:has(> .rounded-full.w-10.h-10) {
+      gap: 10px;
+      /* Lets the actions below ask how wide their own notice is. */
+      container-type: inline-size;
+    }
+    & .flex.gap-3 > .rounded-full.w-10.h-10 {
       width: 1.75rem;
       height: 1.75rem;
       --tw-shadow: 0 0 #0000;
     }
-    & > .rounded-full > svg {
+    & .flex.gap-3 > .rounded-full.w-10.h-10 > svg {
       width: 1rem;
       height: 1rem;
     }
 
-    & > .flex-1 {
+    /* Body: a wrapping row. Everything is a full-width line unless it is the head or the actions. */
+    & .flex.gap-3 > .flex-1.space-y-2 {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       column-gap: 12px;
-      row-gap: 6px;
+      row-gap: 4px;
+      min-height: 1.75rem;
     }
-    & > .flex-1 > * {
+    & .flex.gap-3 > .flex-1.space-y-2 > * {
+      flex: 1 1 100%;
+      order: 2;
+      min-width: 0;
       margin-block: 0;
     }
-    /* Label and sentence, side by side. */
-    & > .flex-1 > :first-child {
-      display: flex;
+    & .flex.gap-3 > .flex-1.space-y-2 > :first-child {
       flex: 1 1 auto;
+      order: 0;
+    }
+    & .flex.gap-3 > .flex-1.space-y-2 > .flex.flex-wrap.items-center[class~="pt-0.5"] {
+      flex: 0 1 auto;
+      order: 1;
+      max-width: 100%;
+      margin-inline-start: auto;
+      padding-top: 0;
+
+      /* In a narrow notice there is no room beside the title, so the actions go back to
+         where the markup has them: last, after the details. */
+      @container (width < 36rem) {
+        order: 3;
+        margin-inline-start: 0;
+      }
+    }
+
+    /* Head: the label is an eyebrow, and sits on the title's line. */
+    & :has(> [class~="text-[0.6875rem]"].font-semibold.text-muted-foreground) {
+      display: flex;
       flex-wrap: wrap;
       align-items: baseline;
       column-gap: 8px;
-      min-width: 0;
     }
-    & > .flex-1 > :first-child > :first-child {
+    & [class~="text-[0.6875rem]"].font-semibold.text-muted-foreground {
       font-family: var(--font-mono);
       font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
-    /* The buttons. */
-    & > .flex-1 > .flex-wrap {
-      flex: 0 0 auto;
-      margin-inline-start: auto;
-      padding-top: 0;
+
+    /* Detail lines: a step smaller and closer together. */
+    & .flex.gap-3 > .flex-1.space-y-2 > .text-sm.text-muted-foreground {
+      gap: 2px 16px;
+      font-size: 0.8125rem;
+      line-height: 1.125rem;
     }
-    & > .flex-1 > .flex-wrap > button {
+
+    /* Every action and chip in the band: 28 px, the kit's small control. */
+    & [class~="min-h-[36px]"] {
       min-height: 1.75rem;
-      padding: 4px 10px;
+      padding-block: 4px;
+      padding-inline: 10px;
       font-size: 0.8125rem;
       line-height: 1.125rem;
     }
   }
+  /* A finger still gets a 36 px target. */
+  @media (pointer: coarse) {
+    :is([data-reader-notices], [data-testid="structured-mail-cards"]) [class~="min-h-[36px]"] {
+      min-height: 2.25rem;
+    }
+  }
+
   /* "Always trust this sender" reads "Trust sender". A theme cannot change the app's words, so
      the button's own text is set to zero size and the short label is drawn after it. English
      only: any other language keeps Bulwark's own wording. The empty text after the slash keeps
      a screen reader from saying it twice: it still reads the full original label. */
-  [data-testid="external-content-notice"].items-start > .flex-1 > .flex-wrap > button:has(> svg.tabler-icon-shield-check):lang(en) {
+  [data-testid="external-content-notice"] button[class~="min-h-[36px]"]:has(> svg.tabler-icon-shield-check):lang(en) {
     gap: 0;
     font-size: 0;
   }
-  [data-testid="external-content-notice"].items-start > .flex-1 > .flex-wrap > button:has(> svg.tabler-icon-shield-check):lang(en) > svg {
+  [data-testid="external-content-notice"] button[class~="min-h-[36px]"]:has(> svg.tabler-icon-shield-check):lang(en) > svg {
     margin-inline-end: 6px;
   }
-  [data-testid="external-content-notice"].items-start > .flex-1 > .flex-wrap > button:has(> svg.tabler-icon-shield-check):lang(en)::after {
+  [data-testid="external-content-notice"] button[class~="min-h-[36px]"]:has(> svg.tabler-icon-shield-check):lang(en)::after {
     content: "Trust sender" / "";
     font-size: 0.8125rem;
     line-height: 1.125rem;
   }
-  /* A finger still gets a 36 px target. */
-  @media (pointer: coarse) {
-    [data-testid="external-content-notice"].items-start > .flex-1 > .flex-wrap > button {
-      min-height: 2.25rem;
+
+  /* ════════ Attachments ════════
+     A file is one 32 px line: a 20 px thumbnail or type icon, the name, the size beside it,
+     the actions. In a wide reading pane the count, the files and Download all share that one
+     line; in a narrow one they stack as Bulwark lays them out. The strip is made a named
+     container so the rules can ask how wide it is. */
+
+  [data-reader-attachments-strip] {
+    padding-block: 6px;
+    container: sol-attachments / inline-size;
+  }
+  [data-testid="reader-attachments"] {
+    gap: 6px;
+
+    & > .flex.min-h-8 {
+      min-height: 2rem;
+    }
+    & > .flex.min-h-8 button.h-9 {
+      height: 1.75rem;
+      padding-inline: 8px;
+      font-size: 0.8125rem;
+    }
+
+    & [data-testid="attachment"] {
+      height: 2rem;
+      gap: 8px;
+      padding-inline-start: 6px;
+      border-radius: var(--radius-md);
+    }
+    /* The thumbnail, or the type tile. At 20 px the tile is its icon alone: the extension is
+       already at the end of the name. */
+    & [data-testid="attachment"] > :is(img, div).h-10.w-10 {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: var(--radius-xs);
+    }
+    & [data-testid="attachment"] > div.h-10.w-10 {
+      background-color: transparent;
+    }
+    & [data-testid="attachment"] > div.h-10.w-10 > span {
+      display: none;
+    }
+    /* Name and size side by side. */
+    & [data-testid="attachment"] > button.flex-col {
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+    & [data-testid="attachment"] > button > span.flex {
+      flex: 0 1 auto;
+      font-size: 0.8125rem;
+      line-height: 1.125rem;
+    }
+    & [data-testid="attachment"] > button > span.text-xs {
+      flex: none;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+    }
+    & [data-testid="attachment"] .h-8.w-8 {
+      width: 1.625rem;
+      height: 1.625rem;
+    }
+    /* "Show 3 more" and "Show fewer" are the same height as a file. */
+    & [data-testid="reader-attachments-row"] > button.h-14 {
+      height: 2rem;
+      padding-inline: 10px;
+      font-size: 0.8125rem;
+    }
+    & [data-testid="reader-attachments-row"] > button.h-14 > span.flex-col {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 8px;
+    }
+  }
+  @container sol-attachments (width >= 44rem) {
+    [data-testid="reader-attachments"] {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      column-gap: 12px;
+    }
+    /* The header's parts join the row: count first, files in the middle, Download all last. */
+    [data-testid="reader-attachments"] > .flex.min-h-8 {
+      display: contents;
+    }
+    [data-testid="reader-attachments"] > .flex.min-h-8 > * {
+      display: flex;
+      align-items: center;
+      height: 2rem;
+      order: 2;
+    }
+    [data-testid="reader-attachments"] > .flex.min-h-8 > .flex-1 {
+      flex: 0 0 auto;
+      order: 0;
+    }
+    [data-testid="reader-attachments"] > [data-testid="reader-attachments-row"] {
+      flex: 1 1 15rem;
+      min-width: 0;
+      order: 1;
     }
   }
 

@@ -1,4 +1,4 @@
-/* Soluma Sunrise 1.4.1 — theme.css
+/* Soluma Sunrise 1.6.0 — theme.css
    Bulwark compiles manifest.json first (the --color-* tokens, the --soluma-* brand tokens, radii,
    typography, print, density) and appends this file after it. This file holds what the manifest
    cannot say: the semantic layer the skin reads (--sol-*), the rest of Tailwind's scale, keyframes
